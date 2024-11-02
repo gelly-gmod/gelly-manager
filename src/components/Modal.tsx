@@ -5,7 +5,7 @@ export default function Modal({
 	children,
 	isOpen,
 }: {
-	children: React.ReactNode;
+	children: React.ReactNode | React.ReactNode[];
 	isOpen: boolean;
 }) {
 	useEffect(() => {

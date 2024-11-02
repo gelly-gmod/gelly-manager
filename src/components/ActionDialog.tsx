@@ -1,16 +1,167 @@
-import { ComponentChildren, FunctionalComponent, VNode } from "preact";
+import styled, { css } from "styled-components";
+import { useEffect, useState } from "react";
+import Modal from "./Modal";
 
-enum ActionPhase {
+export enum ActionPhase {
 	Waiting,
 	Performing,
 	Completed,
 	Error,
 }
 
-export function ActionBusyIndicator({
+const ActionBusyIndicator = styled.div`
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	width: 100%;
+	height: 20%;
+	padding: 24px;
+`;
+
+const primaryButtonStyle = css`
+	background: green;
+	color: white;
+
+	&:hover {
+		background: darkgreen;
+		transform: scale(1.03);
+	}
+`;
+
+const dangerousPrimaryButtonStyle = css`
+	background: red;
+	color: white;
+`;
+
+const basicButtonStyle = css`
+	background: none;
+	border: 1px solid red;
+	color: red;
+`;
+
+export const ActionDialogButton = styled.button<{
+	primary?: boolean;
+	dangerousPrimary?: boolean;
+}>`
+	appearance: none;
+	outline: none;
+	border: none;
+
+	padding: 8px;
+
+	cursor: pointer;
+	transform: scale(1);
+	transition:
+		transform 0.1s ease,
+		background-color 0.1s ease;
+
+	${(props) => props.primary && primaryButtonStyle}
+	${(props) => props.dangerousPrimary && dangerousPrimaryButtonStyle}
+	${(props) => !props.primary && !props.dangerousPrimary && basicButtonStyle}
+`;
+
+export const ActionDialogTitle = styled.h1`
+	font-size: 1.5rem;
+`;
+
+export const ActionDialogDescription = styled.p`
+	font-size: 0.7rem;
+`;
+
+export const ActionDialogButtons = styled.section`
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+
+	width: 10%;
+`;
+
+export default function ActionDialog({
+	BusyIndicator,
+	CompletedIndicator,
+	onPrimary,
+	isOpen,
+	setIsOpen,
+	phase,
+	setPhase,
 	children,
 }: {
-	children: React.ReactNode;
+	BusyIndicator: React.FC;
+	CompletedIndicator: React.FC;
+	onPrimary: () => Promise<unknown>;
+	isOpen: boolean;
+	setIsOpen: (isOpen: boolean) => void;
+	phase: ActionPhase;
+	setPhase: (phase: ActionPhase) => void;
+	children: React.ReactNode | React.ReactNode[];
 }) {
-	return <div class="action-busy-indicator">{children}</div>;
+	console.log(phase, isOpen);
+	useEffect(() => {
+		if (phase === ActionPhase.Performing) {
+			onPrimary()
+				.then(() => setPhase(ActionPhase.Completed))
+				.catch(() => setPhase(ActionPhase.Error));
+		}
+	}, [phase]);
+
+	if (!isOpen) {
+		return null;
+	}
+
+	if (phase === ActionPhase.Completed) {
+		return (
+			<Modal isOpen={isOpen}>
+				<CompletedIndicator />
+				<ActionDialogButtons>
+					<ActionDialogButton
+						primary
+						onClick={() => {
+							setIsOpen(false);
+							setPhase(ActionPhase.Waiting);
+						}}
+					>
+						Close
+					</ActionDialogButton>
+				</ActionDialogButtons>
+			</Modal>
+		);
+	}
+
+	if (phase === ActionPhase.Error) {
+		return (
+			<Modal isOpen={isOpen}>
+				<ActionDialogTitle>
+					An error occurred while performing the action.
+				</ActionDialogTitle>
+				<ActionDialogButtons>
+					<ActionDialogButton
+						primary
+						onClick={() => setIsOpen(false)}
+					>
+						Close
+					</ActionDialogButton>
+				</ActionDialogButtons>
+			</Modal>
+		);
+	}
+
+	if (phase === ActionPhase.Performing) {
+		return (
+			<Modal isOpen={isOpen}>
+				<ActionBusyIndicator>
+					<BusyIndicator />
+				</ActionBusyIndicator>
+			</Modal>
+		);
+	}
+
+	if (phase === ActionPhase.Waiting) {
+		return <Modal isOpen={isOpen}>{children}</Modal>;
+	}
+
+	return null;
 }

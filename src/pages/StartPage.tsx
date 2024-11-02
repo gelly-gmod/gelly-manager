@@ -3,238 +3,10 @@ import { useEffect, useState } from "react";
 import "./StartPage.css";
 import gellyLogo from "../assets/gellylogo.svg";
 import { marked } from "marked";
-import Modal from "../components/Modal";
 
-function InstallModal({
-	latestRelease,
-	isOpen,
-	setIsOpen,
-}: {
-	latestRelease: object | null;
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}) {
-	const [installing, setInstalling] = useState<boolean>(false);
-	const [installed, setInstalled] = useState<boolean>(false);
-	const [errorOccurred, setErrorOccurred] = useState<boolean>(false);
-
-	useEffect(() => {
-		if (installing) {
-			window.GellyBridge.install(latestRelease).then((success) => {
-				if (success) {
-					setInstalled(true);
-					setInstalling(true);
-				} else {
-					setErrorOccurred(true);
-					setInstalled(false);
-					setInstalling(false);
-				}
-			});
-		}
-	}, [installing]);
-
-	return !installing ? (
-		<Modal isOpen={isOpen}>
-			<h1>Install Gelly?</h1>
-			<p>
-				Are you sure you want to install Gelly{" "}
-				{latestRelease ? latestRelease.version : "..."}? Once
-				installation begins, you will not be able to cancel it.
-			</p>
-			<section id="install-modal-buttons">
-				<button id="install" onClick={() => setInstalling(true)}>
-					Install
-				</button>
-				<button id="cancel" onClick={() => setIsOpen(false)}>
-					Cancel
-				</button>
-			</section>
-		</Modal>
-	) : (
-		<Modal isOpen={isOpen}>
-			<h1>
-				Installing Gelly {latestRelease ? latestRelease.version : "..."}
-			</h1>
-			{installed ? (
-				<>
-					<p>Gelly has been successfully installed!</p>
-
-					<button
-						id="close-modal-button"
-						onClick={() => {
-							setIsOpen(false);
-							setInstalling(false);
-							setInstalled(false);
-						}}
-					>
-						Close
-					</button>
-				</>
-			) : (
-				<div id="spinner-container">
-					<div id="spinner" />
-				</div>
-			)}
-		</Modal>
-	);
-}
-
-function UninstallModal({
-	currentVersion,
-	isOpen,
-	setIsOpen,
-}: {
-	currentVersion: string | null;
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}) {
-	const [uninstalling, setUninstalling] = useState<boolean>(false);
-	const [uninstalled, setUninstalled] = useState<boolean>(false);
-	const [errorOccurred, setErrorOccurred] = useState<boolean>(false);
-
-	useEffect(() => {
-		if (uninstalling) {
-			window.GellyBridge.uninstall().then((success) => {
-				if (success) {
-					setUninstalled(true);
-					setUninstalling(true);
-				} else {
-					setErrorOccurred(true);
-					setUninstalled(false);
-					setUninstalling(false);
-				}
-			});
-		}
-	}, [uninstalling]);
-
-	return !uninstalling ? (
-		<Modal isOpen={isOpen}>
-			<h1>Uninstall Gelly?</h1>
-			<p>
-				Are you sure you want to uninstall Gelly{" "}
-				{currentVersion ? currentVersion : "..."}? Once uninstallation
-				begins, you will not be able to cancel it.
-			</p>
-			<section id="install-modal-buttons">
-				<button id="uninstall" onClick={() => setUninstalling(true)}>
-					Uninstall
-				</button>
-				<button id="cancel" onClick={() => setIsOpen(false)}>
-					Cancel
-				</button>
-			</section>
-		</Modal>
-	) : (
-		<Modal isOpen={isOpen}>
-			<h1>
-				Uninstalling Gelly {currentVersion ? currentVersion : "..."}
-			</h1>
-			{uninstalled ? (
-				<>
-					<p>Gelly has been successfully uninstalled!</p>
-
-					<button
-						id="close-modal-button"
-						onClick={() => {
-							setIsOpen(false);
-							setUninstalling(false);
-							setUninstalled(false);
-						}}
-					>
-						Close
-					</button>
-				</>
-			) : (
-				<div id="spinner-container">
-					<div id="spinner" />
-				</div>
-			)}
-		</Modal>
-	);
-}
-
-function CorruptedModal({
-	latestRelease,
-	isOpen,
-	setIsOpen,
-}: {
-	latestRelease: object | null;
-	isOpen: boolean;
-	setIsOpen: (isOpen: boolean) => void;
-}) {
-	const [installing, setInstalling] = useState<boolean>(false);
-	const [installed, setInstalled] = useState<boolean>(false);
-	const [errorOccurred, setErrorOccurred] = useState<boolean>(false);
-
-	useEffect(() => {
-		if (installing) {
-			window.GellyBridge.uninstall().then((success) => {
-				if (!success) {
-					setErrorOccurred(true);
-					setInstalled(false);
-					setInstalling(false);
-					return;
-				}
-
-				window.GellyBridge.install(latestRelease).then((success) => {
-					if (success) {
-						setInstalled(true);
-						setInstalling(true);
-					} else {
-						setErrorOccurred(true);
-						setInstalled(false);
-						setInstalling(false);
-					}
-				});
-			});
-		}
-	}, [installing]);
-
-	return !installing ? (
-		<Modal isOpen={isOpen}>
-			<h1>Your current Gelly installation is corrupted.</h1>
-			<p>
-				Corruption was detected in your current Gelly installation.
-				Would you like to repair the installation and install Gelly{" "}
-				{latestRelease ? latestRelease.version : "..."}?
-			</p>
-			<section id="install-modal-buttons">
-				<button id="install" onClick={() => setInstalling(true)}>
-					Repair
-				</button>
-				<button id="cancel" onClick={() => setIsOpen(false)}>
-					Cancel
-				</button>
-			</section>
-		</Modal>
-	) : (
-		<Modal isOpen={isOpen}>
-			<h1>
-				Installing Gelly {latestRelease ? latestRelease.version : "..."}
-			</h1>
-			{installed ? (
-				<>
-					<p>Gelly has been successfully repaired!</p>
-
-					<button
-						id="close-modal-button"
-						onClick={() => {
-							setIsOpen(false);
-							setInstalling(false);
-							setInstalled(false);
-						}}
-					>
-						Close
-					</button>
-				</>
-			) : (
-				<div id="spinner-container">
-					<div id="spinner" />
-				</div>
-			)}
-		</Modal>
-	);
-}
+import InstallActionDialog from "../components/actions/InstallActionDialog";
+import UninstallActionDialog from "../components/actions/UninstallActionDialog";
+import CorruptedActionDialog from "../components/actions/CorruptedActionDialog";
 
 export default function StartPage() {
 	const [currentVersion, setCurrentVersion] = useState<string | null>(null);
@@ -272,19 +44,19 @@ export default function StartPage() {
 
 	return (
 		<>
-			<InstallModal
+			<InstallActionDialog
 				latestRelease={latestRelease}
 				isOpen={installModalOpen}
 				setIsOpen={setInstallModalOpen}
 			/>
 
-			<UninstallModal
+			<UninstallActionDialog
 				currentVersion={currentVersion}
 				isOpen={uninstallModalOpen}
 				setIsOpen={setUninstallModalOpen}
 			/>
 
-			<CorruptedModal
+			<CorruptedActionDialog
 				latestRelease={latestRelease}
 				isOpen={isCorrupted}
 				setIsOpen={setIsCorrupted}
