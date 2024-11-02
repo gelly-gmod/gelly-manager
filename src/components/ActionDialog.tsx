@@ -81,32 +81,25 @@ export const ActionDialogButtons = styled.section`
 `;
 
 export default function ActionDialog({
-	BusyIndicator,
-	CompletedIndicator,
 	onPrimary,
 	isOpen,
 	setIsOpen,
-	phase,
-	setPhase,
-	children,
+	title,
+	description,
+	primaryButtonText,
+	completedTitle,
+	completedText,
 }: {
-	BusyIndicator: React.FC;
-	CompletedIndicator: React.FC;
 	onPrimary: () => Promise<unknown>;
 	isOpen: boolean;
 	setIsOpen: (isOpen: boolean) => void;
-	phase: ActionPhase;
-	setPhase: (phase: ActionPhase) => void;
-	children: React.ReactNode | React.ReactNode[];
+	title: string;
+	description: string;
+	primaryButtonText: string;
+	completedTitle: string;
+	completedText: string;
 }) {
-	console.log(phase, isOpen);
-	useEffect(() => {
-		if (phase === ActionPhase.Performing) {
-			onPrimary()
-				.then(() => setPhase(ActionPhase.Completed))
-				.catch(() => setPhase(ActionPhase.Error));
-		}
-	}, [phase]);
+	const [phase, setPhase] = useState<ActionPhase>(ActionPhase.Waiting);
 
 	if (!isOpen) {
 		return null;
@@ -115,7 +108,11 @@ export default function ActionDialog({
 	if (phase === ActionPhase.Completed) {
 		return (
 			<Modal isOpen={isOpen}>
-				<CompletedIndicator />
+				<ActionDialogTitle>{completedTitle}</ActionDialogTitle>
+				<ActionDialogDescription>
+					{completedText}
+				</ActionDialogDescription>
+
 				<ActionDialogButtons>
 					<ActionDialogButton
 						primary
@@ -153,14 +150,36 @@ export default function ActionDialog({
 		return (
 			<Modal isOpen={isOpen}>
 				<ActionBusyIndicator>
-					<BusyIndicator />
+					<div id="spinner" />
 				</ActionBusyIndicator>
 			</Modal>
 		);
 	}
 
 	if (phase === ActionPhase.Waiting) {
-		return <Modal isOpen={isOpen}>{children}</Modal>;
+		return (
+			<Modal isOpen={isOpen}>
+				<ActionDialogTitle>{title}</ActionDialogTitle>
+				<ActionDialogDescription>{description}</ActionDialogDescription>
+
+				<ActionDialogButtons>
+					<ActionDialogButton
+						primary
+						onClick={() => {
+							setPhase(ActionPhase.Performing);
+							onPrimary()
+								.then(() => setPhase(ActionPhase.Completed))
+								.catch(() => setPhase(ActionPhase.Error));
+						}}
+					>
+						{primaryButtonText}
+					</ActionDialogButton>
+					<ActionDialogButton onClick={() => setIsOpen(false)}>
+						Cancel
+					</ActionDialogButton>
+				</ActionDialogButtons>
+			</Modal>
+		);
 	}
 
 	return null;
