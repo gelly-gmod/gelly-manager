@@ -114,7 +114,7 @@ const createWindow = () => {
 		mainWindow.setTitleBarOverlay(
 			nativeTheme.shouldUseDarkColors
 				? BACKGROUND_COLORS.dark.nomodal
-				: BACKGROUND_COLORS.light.nomoda,
+				: BACKGROUND_COLORS.light.nomodal,
 		);
 	});
 

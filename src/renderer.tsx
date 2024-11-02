@@ -1,9 +1,10 @@
 import "./index.css";
-import { render } from "preact";
+import { createRoot } from "react-dom/client";
 import StartPage from "./pages/StartPage";
 
 const rootElement = document.getElementById("root");
 
 if (rootElement) {
-	render(<StartPage />, rootElement);
+	const root = createRoot(rootElement);
+	root.render(<StartPage />);
 }

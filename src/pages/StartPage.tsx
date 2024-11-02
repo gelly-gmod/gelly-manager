@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/compat";
+import { useEffect, useState } from "react";
 
 import "./StartPage.css";
 import gellyLogo from "../assets/gellylogo.svg";
@@ -308,14 +308,14 @@ export default function StartPage() {
 							id="install-button"
 							onClick={() => window.GellyBridge.runGMod()}
 						>
-							<i class="bi bi-play-fill"></i> Launch
+							<i className="bi bi-play-fill"></i> Launch
 						</button>
 					) : (
 						<button
 							id="install-button"
 							onClick={() => setInstallModalOpen(true)}
 						>
-							<i class="bi bi-download"></i> Install{" "}
+							<i className="bi bi-download"></i> Install{" "}
 							{latestRelease ? latestRelease.version : "..."}
 						</button>
 					)}

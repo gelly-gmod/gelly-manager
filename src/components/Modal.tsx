@@ -1,13 +1,11 @@
-import { VNode } from "preact";
-
 import "./Modal.css";
-import { useEffect } from "preact/compat";
+import { useEffect } from "react";
 
 export default function Modal({
 	children,
 	isOpen,
 }: {
-	children: VNode | VNode[];
+	children: React.ReactNode;
 	isOpen: boolean;
 }) {
 	useEffect(() => {
