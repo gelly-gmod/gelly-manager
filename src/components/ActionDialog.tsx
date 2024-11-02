@@ -63,21 +63,21 @@ export const ActionDialogButton = styled.button<{
 `;
 
 export const ActionDialogTitle = styled.h1`
-	font-size: 1.5rem;
+	font-size: 2.3rem;
 `;
 
 export const ActionDialogDescription = styled.p`
-	font-size: 0.7rem;
+	font-size: 1rem;
 `;
 
 export const ActionDialogButtons = styled.section`
 	display: flex;
 	flex-direction: row;
 	align-items: center;
-	justify-content: space-between;
+	justify-content: flex-end;
 	gap: 8px;
 
-	width: 10%;
+	width: 100%;
 `;
 
 export default function ActionDialog({

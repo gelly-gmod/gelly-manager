@@ -22,7 +22,7 @@ export default function UninstallActionDialog({
 			description={`Are you sure you want to uninstall Gelly ${currentVersion}?`}
 			primaryButtonText={"Uninstall"}
 			completedTitle={`Gelly ${currentVersion} has been uninstalled!`}
-			completedText={`Gelly ${currentVersion} has been successfully uninstalled!`}
+			completedText={`Gelly ${currentVersion} has been successfully uninstalled! All Gelly settings are still saved.`}
 		/>
 	);
 }
